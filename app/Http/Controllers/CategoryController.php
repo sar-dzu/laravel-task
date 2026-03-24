@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Category;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -21,14 +22,16 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $category = Category::create([
-            'name' => $request->name,
-            'color' => $request->color ?? '#808080',
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100', 'unique:categories,name'],
+            'color' => ['required', 'string'],
         ]);
+
+        $category = Category::create($validated);
 
         return response()->json([
             'message' => 'Kategória bola úspešne vytvorená.',
-            'category' => $category
+            'category' => $category,
         ], Response::HTTP_CREATED);
     }
 
@@ -57,14 +60,21 @@ class CategoryController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $category->update([
-            'name' => $request->name,
-            'color' => $request->color ?? $category->color,
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('categories', 'name')->ignore($category->id),
+            ],
+            'color' => ['required', 'string'],
         ]);
+
+        $category->update($validated);
 
         return response()->json([
             'message' => 'Kategória bola úspešne aktualizovaná.',
-            'category' => $category
+            'category' => $category,
         ], Response::HTTP_OK);
     }
 
