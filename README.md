@@ -1,3 +1,44 @@
+# Auth REST API
+
+## AuthController
+
+### Registrácia používateľa
+
+#### POST /api/auth/register
+![POST /api/auth/register](screenshots/sc2/POST-auth-register.png)
+
+---
+
+### Zmena hesla
+
+#### POST /api/auth/change-password
+![POST /api/auth/change-password](screenshots/sc2/POST-auth-change-password.png)
+
+---
+
+### Úprava profilu používateľa
+
+#### PATCH /api/auth/profile
+![PATCH /api/auth/profile](screenshots/sc2/POST-auth-update-profile.png)
+
+---
+
+### Odhlásenie zo všetkých zariadení
+
+#### POST /api/auth/logout-all
+![POST /api/auth/logout-all](screenshots/sc2/POST-auth-lougout-all.png)
+
+---
+
+## Neúspešné operácie
+
+### Neplatná požiadavka (422)
+
+#### PATCH /api/auth/profile
+![PATCH /api/auth/profile error](screenshots/sc2/POST-auth-update-422.png)
+
+
+
 # Notes REST API
 
 ## NoteController
