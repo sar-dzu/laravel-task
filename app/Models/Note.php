@@ -21,7 +21,6 @@ class Note extends Model
     //public $timestamps = false;
 
     protected $fillable = [
-        'user_id',
         'title',
         'body',
         'status',
@@ -124,6 +123,11 @@ class Note extends Model
             ->where('is_pinned', true)
             ->orderByDesc('updated_at')
             ->get();
+    }
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable')
+            ->where('collection', 'attachment');
     }
 
 }

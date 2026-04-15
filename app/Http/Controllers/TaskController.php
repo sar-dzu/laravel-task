@@ -4,22 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Note;
+use App\Models\Task;
 use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
-    public function index(int $noteId)
+    public function index(Note $note)
     {
-        $note = Note::find($noteId);
-
-        if (!$note) {
-            return response()->json([
-                'message' => 'Poznámka nenájdená.'
-            ], Response::HTTP_NOT_FOUND);
-        }
+        // kto môže vidieť note, môže vidieť aj jej tasky
+        $this->authorize('view', [Task::class, $note]);
 
         $tasks = $note->tasks()
-            ->orderByDesc('created_at')
+            ->orderBy('created_at')
             ->get();
 
         return response()->json([
@@ -36,7 +32,7 @@ class TaskController extends Controller
                 'message' => 'Poznámka nenájdená.'
             ], Response::HTTP_NOT_FOUND);
         }
-
+        $this->authorize('create', [Task::class, $note]);
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'is_done' => ['sometimes', 'boolean'],
@@ -72,7 +68,7 @@ class TaskController extends Controller
                 'message' => 'Úloha nenájdená.'
             ], Response::HTTP_NOT_FOUND);
         }
-
+        $this->authorize('view', [Task::class, $note]);
         return response()->json([
             'task' => $task->load([
                 'comments.user:id,first_name,last_name,email',
@@ -92,12 +88,13 @@ class TaskController extends Controller
 
         $task = $note->tasks()->find($taskId);
 
+
         if (!$task) {
             return response()->json([
                 'message' => 'Úloha nenájdená.'
             ], Response::HTTP_NOT_FOUND);
         }
-
+        $this->authorize('update', [Task::class, $note]);
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'is_done' => ['sometimes', 'boolean'],
@@ -129,7 +126,7 @@ class TaskController extends Controller
                 'message' => 'Úloha nenájdená.'
             ], Response::HTTP_NOT_FOUND);
         }
-
+        $this->authorize('delete', [Task::class, $note]);
         $task->delete();
 
         return response()->json([
